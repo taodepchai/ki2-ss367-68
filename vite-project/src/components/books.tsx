@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { addBook, deleteBook, updateBook } from "../actions/bookAction.ts";
 import store from "../store/store.ts";
+import "./style.scss";
 import Books from "./types";
-import './style.scss';
 const Book: React.FC = () => {
+  const [currentDay, setCurrentDay] = useState<string>("");
+  const [newDay,setNewDay] = useState<string>("");
+  useEffect(() => {
+    const now = new Date();
+    const day = now.getDate().toString().padStart(2, "0");
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const year = now.getFullYear();
+
+    const formattedDate = `${year}-${month}-${day}`;
+    setCurrentDay(formattedDate);
+  }, []);
+  console.log(currentDay);
+  
   const books = store.getState().reducer;
   const [form, setForm] = useState<Books>({
     id: 0,
@@ -21,6 +34,7 @@ const Book: React.FC = () => {
   ) => {
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
+    setNewDay(value);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -78,6 +92,7 @@ const Book: React.FC = () => {
         <input
           type="date"
           name="loan_day"
+          min={currentDay}
           value={form.loan_day}
           onChange={handleChange}
           required
@@ -86,6 +101,7 @@ const Book: React.FC = () => {
           type="date"
           name="pay_day"
           value={form.pay_day}
+          min={newDay}
           onChange={handleChange}
           required
         />
